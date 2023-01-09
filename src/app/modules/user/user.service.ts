@@ -21,10 +21,10 @@ export class UserService {
     if (!user) {
       throw new Error('User not found');
     }
-
+    
+    delete user.password;
     delete user.secret;
     delete user.active;
-    delete user.blockWithdraw;
 
     return user;
   }

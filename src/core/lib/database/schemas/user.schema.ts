@@ -5,10 +5,10 @@ import { Document, Schema as MongoSchema } from 'mongoose';
 @Schema({ timestamps: true, collection: 'users', autoIndex: true })
 export class User extends Document {
   @Prop({ index: true, unique: true })
-  publicAddress: string;
+  username: string;
 
   @Prop({ index: true })
-  parentPublicAddress: string;
+  parentusername: string;
 
   @Prop()
   refCode: string;

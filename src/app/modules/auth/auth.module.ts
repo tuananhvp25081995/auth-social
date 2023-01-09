@@ -11,7 +11,9 @@ import { ApiConfigService } from 'src/core/shared/services';
 import { UserModule } from '../user';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies';
+import { JwtStrategy, FacebookStrategy, GoogleStrategy } from './strategies';
+import { FacebookController, GoogleController } from './controllers';
+import { GoogleService } from './services';
 
 @Module({
   imports: [
@@ -31,8 +33,14 @@ import { JwtStrategy } from './strategies';
     MailModule,
     OtpModule,
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RedisModule],
+  controllers: [AuthController, FacebookController, GoogleController],
+  providers: [
+    AuthService,
+    JwtStrategy, RedisModule,
+    FacebookStrategy,
+    GoogleStrategy,
+    GoogleService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

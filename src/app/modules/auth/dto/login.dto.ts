@@ -5,12 +5,12 @@ export class LoginDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  publicAddress: string;
+  username: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  signature: string;
+  password: string;
 
   @ApiProperty()
   @IsOptional()

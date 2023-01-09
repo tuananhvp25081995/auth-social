@@ -1,6 +1,6 @@
 export interface AuthTokenPayload {
   sub: number;
-  publicAddress: string;
+  username: string;
   role: string;
 }
 

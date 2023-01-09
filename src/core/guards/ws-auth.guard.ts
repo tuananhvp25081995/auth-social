@@ -32,7 +32,7 @@ export class WsJwtGuard implements CanActivate {
 
       const decoded = this.jwtService.verify<{
         sub: number;
-        publicAddress: string;
+        username: string;
       }>(authToken, { secret: process.env.JWT_SECRET });
 
       const user = await this.userService.getUserProfile(decoded.sub);

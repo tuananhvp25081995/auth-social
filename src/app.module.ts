@@ -36,8 +36,6 @@ import { ApiConfigService } from './core/shared/services';
 
         return {
           rootPath: publicDir,
-          // serveRoot - if you want to see files on another controller,
-          // e.g.: http://localhost:8088/files/1.png
           serveRoot: servePath,
           exclude: ['/api*'],
           index: false,

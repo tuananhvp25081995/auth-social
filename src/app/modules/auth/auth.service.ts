@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { faker } from '@faker-js/faker';
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
@@ -13,7 +13,7 @@ import { TokenRepository, UserRepository } from 'src/core/lib/database/repositor
 import { OtpService } from 'src/core/lib/otp';
 import { ApiConfigService } from 'src/core/shared/services';
 import { EntityManager, Transaction, TransactionManager } from 'typeorm';
-
+import * as argon from 'argon2';
 import { TokenType } from '../../../common/enum';
 import { UserService } from '../user';
 import type { LoginDto, RegisterDto } from './dto';
@@ -34,32 +34,35 @@ export class AuthService {
   ) {}
 
   async login(params: LoginDto) {
-    const user = await this.userRepos.findOne({
-      // publicAddress: String(params.publicAddress).toLowerCase(),
+    let user = await this.userRepos.findOne({
+      username: String(params.username).toLowerCase(),
     });
 
+    if (!user) {
+      user = await this.userRepos.findOne({
+        email: String(params.username).toLowerCase(),
+      });
+    }
+    
     if (!user) {
       throw new Error('User not found!');
     }
 
-    // // eslint-disable-next-line max-len
-    // const msg = `Sign this message for authenticating with your wallet. Nonce: ${user.nonce}`; // this make user can only sign-in one place at one time
+    const passwordMatched = await argon.verify(
+      user.password,
+      params.password
+    )  
 
-    // const msgBufferHex = bufferToHex(Buffer.from(msg, 'utf8'));
-    // const address = recoverPersonalSignature({
-    //   data: msgBufferHex,
-    //   sig: params.signature,
-    // });
-
-    // if (address.toLowerCase() !== user.publicAddress.toLowerCase()) {
-    //   throw new Error('Invalid signature');
-    // }
-
-    await this.userRepos.markLastLogin(user.id);
+    if(!passwordMatched) {
+      throw new ForbiddenException(
+        'Incorrect password'
+      )
+    }
+    await this.userRepos.lastLogin(user.id);
 
     const payload: AuthTokenPayload = {
       sub: user.id,
-      publicAddress: user.publicAddress,
+      username: user.username,
       role: UserRole.USER,
     };
 
@@ -84,81 +87,41 @@ export class AuthService {
 
   @Transaction()
   async register(registerData: RegisterDto, @TransactionManager() manager: EntityManager = null) {
-    const existUser = await manager.getCustomRepository(UserRepository).findOne({
-      // publicAddress: String(registerData.publicAddress).toLowerCase(),
+    const hashedPassword = await argon.hash(String(registerData.password));
+    const existUserName = await manager.getCustomRepository(UserRepository).findOne({
+      username: String(registerData.username).toLowerCase(),
     });
 
-    if (existUser) {
-      throw new Error('User already exist!');
+    if (existUserName) {
+      throw new Error('username already exist!');
     }
 
-    let refCode: string;
-    let existRefCode: boolean;
-    do {
-      refCode = randomBytes(4).toString('hex').toUpperCase();
+    const existEmail = await manager.getCustomRepository(UserRepository).findOne({
+      email: String(registerData.email).toLowerCase(),
+    });
 
-      existRefCode = await manager.getCustomRepository(UserRepository).checkExistRefCode(refCode);
-    } while (existRefCode);
-
-    // if (registerData?.refCode) {
-    //   const existParentRefCode = await manager
-    //     .getCustomRepository(UserRepository)
-    //     .checkExistRefCode(registerData.refCode);
-
-    //   if (!existParentRefCode) {
-    //     throw new Error('Parent ref code not found!');
-    //   }
-    // }
+    if (existEmail) {
+      throw new Error('email already exist!');
+    }
 
     const userSecret = this.otpService.generateUniqueSecret();
 
     const user = await manager.getCustomRepository(UserRepository).save({
-      publicAddress: String(registerData.publicAddress).toLowerCase(),
-      nickName: faker.name.fullName(),
-      referralCodeApplied: registerData?.refCode || this.apiConfigService.defaultRef,
-      refCode,
+      email: String(registerData.email).toLocaleLowerCase(),
+      username: String(registerData.username).toLowerCase(),
+      password: hashedPassword,
       secret: userSecret,
-      nonce: randomBytes(32).toString('base64'),
+      role: UserRole.USER,
     });
 
     delete user.secret;
     delete user.active;
-    delete user.blockWithdraw;
 
-    await this.saveRefMongoDB(user);
     return user;
   }
 
-  async saveRefMongoDB(user: UserEntity) {
-    const parentRefUser = await this.userModel.findOne({
-      refCode: user.referralCodeApplied,
-    });
-
-    const newRefUser = await this.userModel.create({
-      publicAddress: String(user.publicAddress).toLowerCase(),
-      refCode: user.refCode,
-      parentRefCode: parentRefUser?.refCode,
-      parentPublicAddress: parentRefUser?.publicAddress ? String(parentRefUser.publicAddress).toLowerCase() : null,
-    });
-
-    if (parentRefUser) {
-      await this.userModel.updateOne(
-        {
-          _id: parentRefUser._id,
-        },
-        {
-          $addToSet: {
-            child: String(newRefUser.publicAddress).toLowerCase(),
-          },
-        },
-      );
-    }
-
-    return newRefUser;
-  }
-
   async refreshToken(refreshToken: string) {
-    const tokenDecode = this.jwtService.decode(refreshToken) as { sub: number; publicAddress: string };
+    const tokenDecode = this.jwtService.decode(refreshToken) as { sub: number; username: string };
     const tokenResult = await this.tokenRepos.findOne({
       where: {
         token: refreshToken,
@@ -184,7 +147,7 @@ export class AuthService {
 
     const payload: AuthTokenPayload = {
       sub: user.id,
-      publicAddress: user.publicAddress,
+      username: user.username,
       role: UserRole.USER,
     };
 
@@ -233,16 +196,5 @@ export class AuthService {
     });
 
     return true;
-  }
-
-  async publicAddressAvailability(publicAddress: string) {
-    const existUser = await this.userRepos.findOne({
-      publicAddress: String(publicAddress).toLowerCase(),
-    });
-
-    return {
-      exist: Boolean(existUser),
-      nonce: existUser?.nonce,
-    };
   }
 }

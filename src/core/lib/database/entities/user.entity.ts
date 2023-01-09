@@ -13,27 +13,35 @@ export class UserEntity {
 
   @Column({
     type: 'varchar',
-    name: 'nick_name',
+    name: 'email',
     length: 100,
     nullable: false,
     unique: true,
   })
-  nickName: string;
+  email: string;
 
   @Column({
-    name: 'public_address',
+    name: 'username',
     type: 'varchar',
     length: 100,
     nullable: false,
   })
-  publicAddress: string;
+  username: string;
 
   @Column({
-    name: 'nonce',
+    name: 'password',
     type: 'text',
     nullable: false,
   })
-  nonce: string;
+  password: string;
+
+  @Column({
+    type: 'varchar',
+    length: '20',
+    name: 'role',
+    nullable: false,
+  })
+  role: string;
 
   @Column({
     type: 'boolean',
@@ -42,6 +50,14 @@ export class UserEntity {
     nullable: false,
   })
   active: boolean;
+
+  @Column({
+    name: 'secret',
+    type: 'varchar',
+    length: 100,
+    nullable: false,
+  })
+  secret: string;
 
   @Column({
     type: 'decimal',
@@ -54,113 +70,11 @@ export class UserEntity {
   balance: number;
 
   @Column({
-    type: 'decimal',
-    name: 'scf_balance',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  scfBalance: number;
-
-  @Column({
     type: 'timestamp',
     name: 'last_login',
     nullable: true,
   })
   lastLogin: Date;
-
-  @Column({
-    type: 'decimal',
-    name: 'deposit_amount',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  depositAmount: number;
-
-  @Column({
-    type: 'decimal',
-    name: 'withdraw_amount',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  withdrawAmount: number;
-
-  @Column({
-    type: 'decimal',
-    name: 'commission_amount',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  commissionAmount: number;
-
-  @Column({
-    type: 'decimal',
-    name: 'total_investment',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  totalInvestment: number;
-
-  @Column({
-    type: 'decimal',
-    name: 'total_revenue',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  totalRevenue: number;
-
-  @Column({
-    type: 'decimal',
-    name: 'day_revenue',
-    precision: 20,
-    scale: 5,
-    default: 0,
-    nullable: false,
-  })
-  dayRevenue: number;
-
-  @Column({
-    type: 'varchar',
-    name: 'ref_code',
-    length: 100,
-    nullable: false,
-  })
-  refCode: string;
-
-  @Column({
-    type: 'varchar',
-    name: 'referral_code_applied',
-    length: 100,
-    nullable: false,
-  })
-  referralCodeApplied: string;
-
-  @Column({
-    name: 'secret',
-    type: 'varchar',
-    length: 100,
-    nullable: false,
-  })
-  secret: string;
-
-  @Column({
-    name: 'level',
-    type: 'int',
-    nullable: false,
-    default: 0,
-  })
-  level: number;
 
   @Column({
     name: 'active_2fa',
@@ -169,21 +83,6 @@ export class UserEntity {
     default: false,
   })
   active2fa: boolean;
-
-  @Column({
-    name: 'block_withdraw',
-    type: 'boolean',
-    nullable: false,
-    default: false,
-  })
-  blockWithdraw: boolean;
-
-  @Column({
-    name: 'min_level',
-    type: 'int',
-    nullable: true,
-  })
-  minLevel: number;
 
   @Column({
     name: 'created_at',

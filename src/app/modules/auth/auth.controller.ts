@@ -5,7 +5,7 @@ import moment from 'moment';
 import { ApiConfigService } from 'src/core/shared/services';
 
 import { AuthService } from './auth.service';
-import { AddressAvailabilityDto, LoginDto, RegisterDto } from './dto';
+import { LoginDto, RegisterDto } from './dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -60,13 +60,6 @@ export class AuthController {
   @Post('signup')
   async register(@Body() registerData: RegisterDto) {
     const result = await this.authService.register(registerData);
-
-    return result;
-  }
-
-  @Get('public-address-availability')
-  async publicAddressAvailability(@Query() query: AddressAvailabilityDto) {
-    const result = await this.authService.publicAddressAvailability(query.publicAddress);
 
     return result;
   }

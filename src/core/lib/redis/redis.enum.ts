@@ -2,13 +2,13 @@ export const IORedisKey = 'IORedis';
 
 export const userOnlineKey = (userId: number) => `UserOnline:${userId}`;
 
-export const userVerifiedKey = (publicAddress: string) => `UserVerified:${publicAddress}`;
+export const userVerifiedKey = (username: string) => `UserVerified:${username}`;
 
-export const userVerifiedTokenKey = (publicAddress: string) => `UserVerifiedToken:${publicAddress}`;
+export const userVerifiedTokenKey = (username: string) => `UserVerifiedToken:${username}`;
 
-export const userResetPassTokenKey = (publicAddress: string) => `UserResetPassToken:${publicAddress}`;
+export const userResetPassTokenKey = (username: string) => `UserResetPassToken:${username}`;
 
-export const userResetPassKey = (publicAddress: string) => `UserResetPass:${publicAddress}`;
+export const userResetPassKey = (username: string) => `UserResetPass:${username}`;
 
 export const genNFTEnergy = (nftId: number) => `NFTEnergy:${nftId}`;
 

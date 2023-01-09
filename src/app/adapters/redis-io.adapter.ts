@@ -13,7 +13,7 @@ import type { SocketStateService } from './socket-state.service';
 
 interface ITokenPayload {
   readonly userId: number;
-  readonly publicAddress: string;
+  readonly username: string;
 }
 
 export interface IAuthenticatedSocket extends Socket {
@@ -65,12 +65,12 @@ export class RedisIoAdapter extends IoAdapter implements WebSocketAdapter {
       try {
         const decoded = this.jwtService.verify<{
           sub: number;
-          publicAddress: string;
+          username: string;
         }>(token, { secret: process.env.JWT_SECRET });
 
         socket.auth = {
           userId: decoded.sub,
-          publicAddress: decoded.publicAddress,
+          username: decoded.username,
         };
 
         return next();
