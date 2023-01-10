@@ -25,12 +25,14 @@ export class UserEntity {
     type: 'varchar',
     length: 100,
     nullable: false,
+    unique: true,
   })
   username: string;
 
   @Column({
     name: 'password',
     type: 'text',
+    default: '',
     nullable: false,
   })
   password: string;
@@ -42,6 +44,24 @@ export class UserEntity {
     nullable: false,
   })
   role: string;
+
+  @Column({
+    type: 'varchar',
+    length: '20',
+    name: 'first_name',
+    default: '',
+    nullable: false,
+  })
+  firstName: string;
+
+  @Column({
+    type: 'varchar',
+    length: '20',
+    name: 'last_name',
+    default: '',
+    nullable: false,
+  })
+  lastName: string;
 
   @Column({
     type: 'boolean',

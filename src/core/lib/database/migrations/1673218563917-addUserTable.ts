@@ -33,6 +33,21 @@ export class addUserTable1673218563917 implements MigrationInterface {
                 {
                     name: 'password',
                     type: 'text',
+                    default: "''",
+                    isNullable: false,
+                },
+                {
+                    name: 'first_name',
+                    type: 'varchar',
+                    length: '20',
+                    default: "''",
+                    isNullable: false,
+                },
+                {
+                    name: 'last_name',
+                    type: 'varchar',
+                    length: '20',
+                    default: "''",
                     isNullable: false,
                 },
                 {

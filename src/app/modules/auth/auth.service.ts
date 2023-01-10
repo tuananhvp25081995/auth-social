@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { faker } from '@faker-js/faker';
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { randomBytes } from 'crypto';
 import moment from 'moment';
 import { Model } from 'mongoose';
 import { RedisService } from 'src/core/lib';
-import { User, UserEntity } from 'src/core/lib/database';
+import { User } from 'src/core/lib/database';
 import { TokenRepository, UserRepository } from 'src/core/lib/database/repositories';
 import { OtpService } from 'src/core/lib/otp';
 import { ApiConfigService } from 'src/core/shared/services';
@@ -27,10 +25,7 @@ export class AuthService {
     private readonly userRepos: UserRepository,
     private readonly tokenRepos: TokenRepository,
     @InjectModel(User.name)
-    private readonly userModel: Model<User>,
     private readonly otpService: OtpService,
-    private readonly redis: RedisService,
-    private readonly userService: UserService,
   ) {}
 
   async login(params: LoginDto) {
