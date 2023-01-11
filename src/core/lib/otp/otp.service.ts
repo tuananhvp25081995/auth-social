@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { authenticator } from 'otplib';
-import { toDataURL } from 'qrcode';
+import { Injectable } from "@nestjs/common";
+import { authenticator } from "otplib";
+import { toDataURL } from "qrcode";
 
 @Injectable()
 export class OtpService {
